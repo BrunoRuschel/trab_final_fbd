@@ -30,3 +30,24 @@ JOIN jogadores j ON e.cod_equ = j.cod_equ JOIN pessoas p ON j.cod_pessoa = p.cod
 WHERE j.idade > 35
 GROUP BY e.nomee
 HAVING AVG(p.rating) > 9.0;
+
+-- lista os canais de transmissão que 
+-- não transmitem nenhum jogo do campeonato brasileiro série A
+SELECT nomet
+FROM transmissoes t
+WHERE NOT EXISTS (
+    SELECT cod_tav
+    FROM transmissoes_ao_vivo tav NATURAL JOIN jogos j NATURAL JOIN ligas l
+    WHERE l.nomel = 'Brasileirão Série A'
+    AND tav.cod_tran = t.cod_tran
+);
+
+-- nome e função dos árbitros que participaram de jogos no maracanã
+SELECT nomea AS Arbitro, funcao, nomeest
+FROM arbitros NATURAL JOIN jogos NATURAL JOIN estadios
+WHERE cod_est IN (
+    SELECT cod_est
+    FROM estadios
+    WHERE nomeest = 'Maracanã'
+);
+
