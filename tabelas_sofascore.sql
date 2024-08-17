@@ -108,7 +108,7 @@ create table jogos
 (cod_jogo int not null primary key,
 placar varchar(7) not null,
 cod_est int not null,
-cod_arb int not null,
+cod_arb int,
 cod_liga int not null,
 foreign key (cod_est) references estadios,
 foreign key (cod_arb) references arbitros,
@@ -306,7 +306,7 @@ INSERT INTO jogos (cod_jogo, placar, cod_est, cod_arb, cod_liga) VALUES
 (3, '1-0', 3, 3, 3),
 (4, '4-1', 4, 4, 4),
 (5, '2-1', 5, 1, 5), -- Jogo no Maracanã
-(6, '1-1', 6, 1, 5),
+(6, '1-1', 6, 5, 5),
 (7, '3-2', 7, 4, 6), -- Jogo no Etihad Stadium
 (8, '2-1', 8, 4, 6); -- Jogo no Anfield
 
@@ -331,10 +331,3 @@ INSERT INTO transmissoes_ao_vivo (cod_tav, cod_tran, cod_jogo) VALUES
 (6, 5, 6), -- Transmissão do jogo no Allianz Parque;
 (7, 6, 7), -- Transmissão do jogo no Etihad Stadium
 (8, 6, 8); -- Transmissão do jogo no Anfield
-
-
-
-
-
-
-

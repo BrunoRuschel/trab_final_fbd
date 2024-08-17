@@ -51,3 +51,53 @@ WHERE cod_est IN (
     WHERE nomeest = 'Maracanã'
 );
 
+
+-- visão com todos os jogos do flamengo na temporada atual do brasileirão
+-- poderia ser implementado para outros times, de acordo com a
+-- torcida do usuário atual, por exemplo
+
+drop view  if exists JogosFlamengo;
+
+CREATE VIEW JogosFlamengo
+AS SELECT DISTINCT *
+ from jogos j
+ where j.cod_jogo IN (
+	SELECT cod_jogo 
+    FROM confrontos c NATURAL JOIN ligas l
+    WHERE c.equipe1 = 5 OR c.equipe2 = 5
+    AND l.nomel = 'Brasileirão Série A'
+ );
+
+-- Jogos onde o Flamengo é favorito a ganhar no brasileirão
+-- Possibilita a análise de apostas.
+ SELECT * 
+ FROM JogosFlamengo NATURAL JOIN confrontos c
+ WHERE (c.mandante = 1 AND ((c.equipe1 = 5 and  c.odd_casa < c.odd_emp) 
+        					OR (c.equipe2 = 5 AND c.odd_vis < c.odd_casa)))
+   		 OR (c.mandante = 2 AND ((c.equipe1 = 5 AND c.odd_vis < c.odd_casa) 
+             				OR (c.equipe2 = 5 AND c.odd_casa < c.odd_vis)));
+                            
+-- Jogos do Flamengo no Brasileirão apitados por Anderson Daronco
+-- Possibilita analisar a influência do árbitro nos resultados.
+SELECT * 
+FROM JogosFlamengo NATURAL JOIN jogos j NATURAL JOIN arbitros a
+WHERE a.nomea = 'Anderson Daronco';
+
+-- Gatilho para a remoção de um árbitro.
+-- Garante que nenhuma equipe de arbitragem exista sem arbitro principal.
+-- Garante que os jogos continuam existindo, mesmo sem o árbitro principal.
+
+DROP TRIGGER IF EXISTS RemocaoArbitro;
+CREATE TRIGGER RemocaoArbitro
+BEFORE DELETE ON arbitros
+FOR EACH ROW
+BEGIN
+    DELETE FROM equipes_de_abitragem WHERE cod_arb = OLD.cod_arb;
+    UPDATE jogos j SET j.cod_arb = NULL WHERE j.cod_arb = OLD.cod_arb;
+END; 
+
+
+
+
+
+
